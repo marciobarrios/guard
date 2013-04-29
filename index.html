@@ -145,7 +145,8 @@
           return matchingElements;
         }
 
-        //default messages
+        //default messages (one message for every input type),
+        // here we could even deal with some kind of i18n
         var defaultMessages = {
           "text": "Please fill this field with at least 3 characters",
           "email": "Please fill this field with a correct email address"
@@ -163,7 +164,91 @@
           this.messages = messages || defaultMessages;
         }
 
+         /**
+          * Checks if the browser supports HTML5 forms and init the validator
+          */
+         guard.prototype.validate = function(){
 
+          var elem = this.elem,
+              messages = this.messages,
+              showError = this.showMessages;
+
+          // Capture the submit event to check the errors
+          addEvent("submit", elem, function(event) {
+
+            // list of elements with requiered attribute
+            var inputs = getAllElementsWithAttribute("data-required"),
+            valid = true;
+
+            for (var i = 0, inputsLength = inputs.length; i < inputsLength; i++){
+              var type = inputs[i].getAttribute("type"),
+              min = inputs[i].getAttribute("data-minlength");
+
+              if (supportsAttr("input", "required")) { // HTML5 forms
+                if (!inputs[i].checkValidity()) valid = false;
+
+                // Manage the message
+                showError(inputs[i], messages[type], valid);
+              }
+              else { // small and incomplete polyfill for older browsers
+
+                var val = inputs[i].value;
+
+                if ( type == "text" ) {
+                  if ( val == "" || val.length < parseInt(min) ) {
+                    valid = false;
+                  }
+                }
+                else if ( type == "email" && !is_email(val) ) {
+                  valid = false;
+                }
+
+                // Manage the message
+                showError(inputs[i], messages[type], valid);
+              }
+
+            }
+
+            if ( !valid ) {
+              // Let's stop the form submission
+              event.preventDefault ? event.preventDefault() : event.returnValue = false;
+            }
+
+          });
+
+        }
+
+        /**
+         * Shows/removes messages
+         *
+         * @param {object} elem
+         * @param {string} text
+         * @param {bool} valid
+         */
+        guard.prototype.showMessages = function(elem, text, valid) {
+
+          var errorContainer = elem.parentNode.getElementsByClassName("error");
+
+          // if there is an error, I create the container only if it doesn't exists
+          if (!valid) {
+            if ( errorContainer.length ) { // there is an error with an existing container
+              errorContainer[0].innerHTML = text;
+            }
+            else { // there is an error without an existing container
+              var span = document.createElement("span");
+              span.className = "error";
+              span.appendChild(document.createTextNode(text));
+
+              elem.parentNode.appendChild(span);
+            }
+          }
+          else { // if there is not error, I delete the message if exists
+            if ( errorContainer.length ) {
+              elem.parentNode.removeChild(errorContainer[0]);
+            }
+          }
+
+        }
 
         // Expose it!
         w.guard = guard;
@@ -173,7 +258,6 @@
 
       // init Guard
       new guard("myform").validate();
-
 
     </script>
   </body>
