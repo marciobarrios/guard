@@ -16,6 +16,9 @@
 
         Related post I wrote for Tuenti dev blog explaining these concepts:
         http://corporate.tuenti.com/es/dev/blog/tuenti-ui-coding-style-guide
+
+        Note: I made the first working version directly in the browser (jsfiddle),
+        so commits are not as strictly "real"
       */
 
       /* Mini reset for this little example. "*" is not recommended in a "real" project */
@@ -97,6 +100,79 @@
     </form>
 
     <script>
+
+      /**
+       * Closure to ensure the integrity of the code
+       *
+       * Objective: take advantage of HTML5 forms and generate fallback for older
+       * browsers creating a small polyfill (of course this is a very limited example)
+       */
+      (function(w, d){
+        "use strict";
+
+        // helper to test for attribute support
+        function supportsAttr(el, attr) {
+          return attr in document.createElement(el);
+        }
+
+        // helper to attach events
+        function addEvent(evnt, elem, func) {
+           if (elem.addEventListener)  // W3C DOM
+            elem.addEventListener(evnt,func,false);
+           else if (elem.attachEvent) { // IE DOM
+            elem.attachEvent("on"+evnt, func);
+          }
+          else {
+            elem[evnt] = func;
+          }
+        }
+
+        // helper to detect an email
+        function is_email(value){
+          return (/^([a-z0-9])(([-a-z0-9._+])*([a-z0-9]))*\@([a-z0-9])(([a-z0-9-])*([a-z0-9]))+(\.([a-z0-9])([-a-z0-9_-])?([a-z0-9])+)+$/).test(value);
+        }
+
+        // helper to find elements with a certain attribute
+        function getAllElementsWithAttribute(attribute) {
+          var matchingElements = [],
+          allElements = document.getElementsByTagName('*');
+          for (var i = 0; i < allElements.length; i++) {
+            if (allElements[i].getAttribute(attribute)) {
+              // Element exists with attribute. Add to array.
+              matchingElements.push(allElements[i]);
+            }
+          }
+          return matchingElements;
+        }
+
+        //default messages
+        var defaultMessages = {
+          "text": "Please fill this field with at least 3 characters",
+          "email": "Please fill this field with a correct email address"
+        };
+
+
+        /**
+         * Guard constructor
+         *
+         * @param  {string} elem, id of the form to validate
+         * @param  {object} messages, object with messages (optional)
+         */
+        var guard = function(elem, messages) {
+          this.elem = d.getElementById(elem);
+          this.messages = messages || defaultMessages;
+        }
+
+
+
+        // Expose it!
+        w.guard = guard;
+
+      })(this, this.document);
+
+
+      // init Guard
+      new guard("myform").validate();
 
 
     </script>
