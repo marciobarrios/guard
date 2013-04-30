@@ -59,7 +59,7 @@
 
         // helper to test for attribute support
         function supportsAttr(el, attr) {
-          return attr in document.createElement(el);
+          return attr in d.createElement(el);
         }
 
         // helper to attach events
@@ -82,7 +82,7 @@
         // helper to find elements with a certain attribute
         function getAllElementsWithAttribute(attribute) {
           var matchingElements = [],
-          allElements = document.getElementsByTagName('*');
+          allElements = d.getElementsByTagName('*');
           for (var i = 0; i < allElements.length; i++) {
             if (allElements[i].getAttribute(attribute)) {
               // Element exists with attribute. Add to array.
@@ -125,14 +125,18 @@
 
             // list of elements with requiered attribute
             var inputs = getAllElementsWithAttribute("data-required"),
-            valid = true;
+                validForm = true;
 
             for (var i = 0, inputsLength = inputs.length; i < inputsLength; i++){
               var type = inputs[i].getAttribute("type"),
-              min = inputs[i].getAttribute("data-minlength");
+                  min = inputs[i].getAttribute("data-minlength"),
+                  valid = true;
 
               if (supportsAttr("input", "required")) { // HTML5 forms
-                valid = ( inputs[i].checkValidity() ) ? true : false;
+                if ( !inputs[i].checkValidity() ) {
+                  valid = false; // for a form element
+                  validForm = false; // for the entire form
+                }
 
                 // Manage the message
                 showError(inputs[i], messages[type], valid);
@@ -144,10 +148,12 @@
                 if ( type == "text" ) {
                   if ( val == "" || val.length < parseInt(min) ) {
                     valid = false;
+                    validForm = false;
                   }
                 }
                 else if ( type == "email" && !is_email(val) ) {
                   valid = false;
+                  validForm = false;
                 }
 
                 // Manage the message
@@ -156,7 +162,7 @@
 
             }
 
-            if ( !valid ) {
+            if ( !validForm ) {
               // Let's stop the form submission
               event.preventDefault ? event.preventDefault() : event.returnValue = false;
             }
@@ -182,9 +188,9 @@
               errorContainer[0].innerHTML = text;
             }
             else { // there is an error without an existing container
-              var span = document.createElement("span");
+              var span = d.createElement("span");
               span.className = "error";
-              span.appendChild(document.createTextNode(text));
+              span.appendChild(d.createTextNode(text));
 
               elem.parentNode.appendChild(span);
             }
