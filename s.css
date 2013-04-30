@@ -29,7 +29,7 @@ http://www.stubbornella.org/content/2010/06/25/the-media-object-saves-hundreds-o
 .item:last-child { margin-top: 20px; }
 
 .title { font-size: 1.2em;  padding-bottom: .2em; border-bottom: 1px solid #ccc; }
-.label { width: 150px; line-height: 30px; text-align: right; } /* why .label instead of label? flexibility */
+.label { width: 150px; line-height: 36px; text-align: right; } /* why .label instead of label? flexibility */
 input { font-size: 1em; }
 .input-text {
   -moz-appearance: none; -webkit-appearance: none;
@@ -40,7 +40,7 @@ input { font-size: 1em; }
   box-shadow: inset 0 2px rgba(0,0,0,.05);
   border-radius: 3px;
 } /* why .input-text instead input[type=text]? performance */
-input[type=checkbox] { margin-top: 8px; }
+input[type=checkbox] { margin-top: 10px; }
 
 .button {
   -moz-appearance: none; -webkit-appearance: none;
