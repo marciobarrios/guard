@@ -6,6 +6,38 @@
     <link rel="stylesheet" href="lib/mocha/mocha.css">
 </head>
 <body>
+
+    <form id="myform" action="" novalidate style="visibility: hidden; margin-top: -300px;">
+      <fieldset>
+        <h1 class="title">My Lovely form</h1>
+
+        <ul>
+          <li class="item">
+            <label class="item-media label">Name</label>
+            <input class="item-body input-text" type="text" pattern=".{3,}" data-minlength="3" placeholder="Name" data-required="true" required>
+          </li>
+          <li class="item">
+            <label class="item-media label">Mail</label>
+            <input class="item-body input-text" type="email" placeholder="yourmail@yourprovider.com" data-required="true" required>
+          </li>
+          <li class="item">
+            <label class="item-media label">Phone</label>
+            <input class="item-body input-text" type="tel" placeholder="935 276 969">
+          </li>
+          <li class="item">
+            <label>
+              <span class="item-media label">I've read the TOS</span>
+              <input class="item-body" type="checkbox" value="1">
+            </label>
+          </li>
+          <li class="item">
+            <input class="button" type="submit" value="Send">
+          </li>
+        </ul>
+
+      </fieldset>
+    </form>
+
     <div id="mocha"></div>
     <script src="lib/mocha/mocha.js"></script>
     <script>mocha.setup('bdd')</script>
@@ -13,7 +45,164 @@
     <script src="lib/chai.js"></script>
     <script>var expect = chai.expect</script>
 
-    <!-- include source files here... -->
+    <!-- Copy from index.html -->
+    <script>
+
+      /**
+       * Closure to ensure the integrity of the code
+       *
+       * Objective: take advantage of HTML5 forms and generate fallback for older
+       * browsers creating a small polyfill (of course this is a very limited example)
+       */
+      (function(w, d){
+        "use strict";
+
+        // helper to test for attribute support
+        function supportsAttr(el, attr) {
+          return attr in document.createElement(el);
+        }
+
+        // helper to attach events
+        function addEvent(evnt, elem, func) {
+           if (elem.addEventListener)  // W3C DOM
+            elem.addEventListener(evnt,func,false);
+           else if (elem.attachEvent) { // IE DOM
+            elem.attachEvent("on"+evnt, func);
+          }
+          else {
+            elem[evnt] = func;
+          }
+        }
+
+        // helper to detect an email
+        function is_email(value){
+          return (/^([a-z0-9])(([-a-z0-9._+])*([a-z0-9]))*\@([a-z0-9])(([a-z0-9-])*([a-z0-9]))+(\.([a-z0-9])([-a-z0-9_-])?([a-z0-9])+)+$/).test(value);
+        }
+
+        // helper to find elements with a certain attribute
+        function getAllElementsWithAttribute(attribute) {
+          var matchingElements = [],
+          allElements = document.getElementsByTagName('*');
+          for (var i = 0; i < allElements.length; i++) {
+            if (allElements[i].getAttribute(attribute)) {
+              // Element exists with attribute. Add to array.
+              matchingElements.push(allElements[i]);
+            }
+          }
+          return matchingElements;
+        }
+
+        //default messages (one message for every input type),
+        // here we could even deal with some kind of i18n
+        var defaultMessages = {
+          "text": "Please fill this field with at least 3 characters",
+          "email": "Please fill this field with a correct email address"
+        };
+
+
+        /**
+         * Guard constructor
+         *
+         * @param  {string} elem, id of the form to validate
+         * @param  {object} messages, object with messages (optional)
+         */
+        var guard = function(elem, messages) {
+          this.elem = d.getElementById(elem);
+          this.messages = messages || defaultMessages;
+        }
+
+         /**
+          * Checks if the browser supports HTML5 forms and init the validator
+          */
+         guard.prototype.validate = function(){
+
+          var elem = this.elem,
+              messages = this.messages,
+              showError = this.showMessages;
+
+          // Capture the submit event to check the errors
+          addEvent("submit", elem, function(event) {
+
+            // list of elements with requiered attribute
+            var inputs = getAllElementsWithAttribute("data-required"),
+            valid = true;
+
+            for (var i = 0, inputsLength = inputs.length; i < inputsLength; i++){
+              var type = inputs[i].getAttribute("type"),
+              min = inputs[i].getAttribute("data-minlength");
+
+              if (supportsAttr("input", "required")) { // HTML5 forms
+                if (!inputs[i].checkValidity()) valid = false;
+
+                // Manage the message
+                showError(inputs[i], messages[type], valid);
+              }
+              else { // small and incomplete polyfill for older browsers
+
+                var val = inputs[i].value;
+
+                if ( type == "text" ) {
+                  if ( val == "" || val.length < parseInt(min) ) {
+                    valid = false;
+                  }
+                }
+                else if ( type == "email" && !is_email(val) ) {
+                  valid = false;
+                }
+
+                // Manage the message
+                showError(inputs[i], messages[type], valid);
+              }
+
+            }
+
+            if ( !valid ) {
+              // Let's stop the form submission
+              event.preventDefault ? event.preventDefault() : event.returnValue = false;
+            }
+
+          });
+
+        }
+
+        /**
+         * Shows/removes messages
+         *
+         * @param {object} elem
+         * @param {string} text
+         * @param {bool} valid
+         */
+        guard.prototype.showMessages = function(elem, text, valid) {
+
+          var errorContainer = elem.parentNode.getElementsByClassName("error");
+
+          // if there is an error, I create the container only if it doesn't exists
+          if (!valid) {
+            if ( errorContainer.length ) { // there is an error with an existing container
+              errorContainer[0].innerHTML = text;
+            }
+            else { // there is an error without an existing container
+              var span = document.createElement("span");
+              span.className = "error";
+              span.appendChild(document.createTextNode(text));
+
+              elem.parentNode.appendChild(span);
+            }
+          }
+          else { // if there is not error, I delete the message if exists
+            if ( errorContainer.length ) {
+              elem.parentNode.removeChild(errorContainer[0]);
+            }
+          }
+
+        }
+
+        // Expose it!
+        w.guard = guard;
+
+      })(this, this.document);
+
+    </script>
 
     <!-- include spec files here... -->
     <script src="spec/test.js"></script>
