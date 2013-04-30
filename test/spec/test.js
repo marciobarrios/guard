@@ -81,7 +81,7 @@
 		});
 
 		it('Wrong mail should be invalid', function () {
-			email.setAttribute("value","marciobarrios@gmail.com");
+			email.setAttribute("value","xxx");
 			fireClick(submit);
 
 			errorExists = email.parentNode.querySelector(".error");
@@ -90,6 +90,18 @@
 			else errorExists = 0;
 
 			expect(errorExists).to.equal(1);
+		});
+
+		it('A real mail should be valid', function () {
+			email.setAttribute("value","marciobarrios@gmail.com");
+			fireClick(submit);
+
+			errorExists = email.parentNode.querySelector(".error");
+
+			if (errorExists != null) errorExists = 1;
+			else errorExists = 0;
+
+			expect(errorExists).to.equal(0);
 		});
 
 	});

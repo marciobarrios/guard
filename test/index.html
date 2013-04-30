@@ -132,7 +132,7 @@
               min = inputs[i].getAttribute("data-minlength");
 
               if (supportsAttr("input", "required")) { // HTML5 forms
-                if (!inputs[i].checkValidity()) valid = false;
+                valid = ( inputs[i].checkValidity() ) ? true : false;
 
                 // Manage the message
                 showError(inputs[i], messages[type], valid);

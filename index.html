@@ -41,6 +41,7 @@
       .label { width: 150px; } /* why .label instead of label or ? flexibility */
       .input-text {
         -moz-appearance: none; -webkit-appearance: none;
+        display: inline-block;
         width: 150px;
         padding: 4px;
         border: 1px solid #ccc;
@@ -185,7 +186,7 @@
               min = inputs[i].getAttribute("data-minlength");
 
               if (supportsAttr("input", "required")) { // HTML5 forms
-                if (!inputs[i].checkValidity()) valid = false;
+                valid = ( inputs[i].checkValidity() ) ? true : false;
 
                 // Manage the message
                 showError(inputs[i], messages[type], valid);
