@@ -14,7 +14,7 @@
 
 /* Mini reset for this little example. "*" is not recommended in a "real" project */
 * { margin: 0; padding: 0; }
-body { padding: 25px; font: 13px/1.3 sans-serif; }
+body { padding: 25px; font: 1em/1.3 sans-serif; color: #666; }
 ul { list-style: none; }
 fieldset { border: 0; }
 
@@ -28,25 +28,31 @@ http://www.stubbornella.org/content/2010/06/25/the-media-object-saves-hundreds-o
 .item { margin-top: 10px; }
 .item:last-child { margin-top: 20px; }
 
-.title { font-size: 15px; border-bottom: 1px solid #ccc; }
-.label { width: 150px; } /* why .label instead of label? flexibility */
+.title { font-size: 1.2em;  padding-bottom: .2em; border-bottom: 1px solid #ccc; }
+.label { width: 150px; line-height: 30px; text-align: right; } /* why .label instead of label? flexibility */
+input { font-size: 1em; }
 .input-text {
   -moz-appearance: none; -webkit-appearance: none;
   display: inline-block;
-  width: 150px;
-  padding: 4px;
+  width: 250px;
+  padding: 8px;
   border: 1px solid #ccc;
   box-shadow: inset 0 2px rgba(0,0,0,.05);
+  border-radius: 3px;
 } /* why .input-text instead input[type=text]? performance */
+input[type=checkbox] { margin-top: 8px; }
 
 .button {
   -moz-appearance: none; -webkit-appearance: none;
-  background: #dde860;
-  border: 1px solid #baca20;
-  border-radius: 4px;
-  padding: 4px 8px;
+  color: #fff;
+  background: #9f60b2;
+  border-radius: 3px;
+  border: none;
+  padding: 10px 20px;
   font-weight: bold;
+  cursor: pointer;
 }
+.button:hover { background: #8e44ad; }
 
 /* Error messages */
 .error { color: red; }
